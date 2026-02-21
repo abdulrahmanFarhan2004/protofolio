@@ -1,0 +1,1866 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio — Java Developer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       DESIGN TOKENS — Java × Glassmorphism × Apple UI
+    ============================================================ */
+    :root {
+      /* Core Colors */
+      --java-orange:     #FF6B35;
+      --java-orange-2:   #FF8C42;
+      --java-orange-3:   #FFB347;
+      --cyber-blue:      #007396;
+      --cyber-teal:      #00D4AA;
+      --arctic-blue:     #4FC3F7;
+
+      /* Backgrounds */
+      --bg-void:         #060A0F;
+      --bg-base:         #0D1117;
+      --bg-surface:      #1A2332;
+      --bg-elevated:     #1E2A3A;
+      --bg-hover:        #243448;
+
+      /* Glass */
+      --glass-bg:        rgba(255, 255, 255, 0.05);
+      --glass-bg-hover:  rgba(255, 255, 255, 0.09);
+      --glass-border:    rgba(255, 255, 255, 0.09);
+      --glass-border-h:  rgba(255, 255, 255, 0.18);
+
+      /* Text */
+      --text-primary:    #FFFFFF;
+      --text-secondary:  #E2E8F0;
+      --text-muted:      #94A3B8;
+      --text-faint:      #475569;
+
+      /* Gradients */
+      --grad-java:       linear-gradient(135deg, #FF6B35, #FF8C42, #FFB347);
+      --grad-cyber:      linear-gradient(135deg, #007396, #00D4AA, #4FC3F7);
+      --grad-hero:       linear-gradient(135deg, #FF6B35 0%, #FF8C42 30%, #007396 70%, #00D4AA 100%);
+      --grad-bg:         linear-gradient(160deg, #060A0F 0%, #0D1117 50%, #0F2640 100%);
+
+      /* Spacing */
+      --space-xs:  4px;
+      --space-sm:  8px;
+      --space-md:  16px;
+      --space-lg:  32px;
+      --space-xl:  64px;
+      --space-2xl: 128px;
+
+      /* Border Radius */
+      --radius-sm:  12px;
+      --radius-md:  20px;
+      --radius-lg:  28px;
+      --radius-xl:  40px;
+      --radius-full: 9999px;
+
+      /* Shadows */
+      --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0,0,0,0.3);
+      --shadow-glow-orange: 0 0 40px rgba(255, 107, 53, 0.2);
+      --shadow-glow-teal:   0 0 40px rgba(0, 212, 170, 0.15);
+
+      /* Transitions */
+      --ease-apple:  cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+      --ease-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    /* ============================================================
+       RESET & BASE
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg-base);
+      color: var(--text-secondary);
+      overflow-x: hidden;
+      line-height: 1.6;
+      cursor: none;
+    }
+
+    ::selection {
+      background: rgba(255, 107, 53, 0.3);
+      color: #fff;
+    }
+
+    a { text-decoration: none; color: inherit; }
+    img { display: block; max-width: 100%; }
+    button { cursor: none; font-family: inherit; border: none; background: none; }
+
+    /* ============================================================
+       CUSTOM CURSOR
+    ============================================================ */
+    #cursor-dot,
+    #cursor-ring {
+      position: fixed;
+      top: 0; left: 0;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: opacity 0.3s;
+    }
+
+    #cursor-dot {
+      width: 8px; height: 8px;
+      background: var(--java-orange);
+      transition: transform 0.1s var(--ease-bounce), background 0.3s;
+    }
+
+    #cursor-ring {
+      width: 36px; height: 36px;
+      border: 1.5px solid rgba(255, 107, 53, 0.6);
+      transition: transform 0.15s var(--ease-smooth), width 0.3s var(--ease-bounce), height 0.3s var(--ease-bounce), border-color 0.3s;
+    }
+
+    body.cursor-hover #cursor-dot  { transform: translate(-50%,-50%) scale(1.8); background: var(--cyber-teal); }
+    body.cursor-hover #cursor-ring { width: 56px; height: 56px; border-color: rgba(0,212,170,0.5); }
+
+    /* ============================================================
+       AMBIENT BACKGROUND LIGHTS
+    ============================================================ */
+    .ambient-lights {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .ambient-lights::before {
+      content: '';
+      position: absolute;
+      top: -200px; left: -150px;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(255,107,53,0.13) 0%, transparent 70%);
+      animation: ambientMove1 12s ease-in-out infinite alternate;
+    }
+
+    .ambient-lights::after {
+      content: '';
+      position: absolute;
+      bottom: -150px; right: -100px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(0,115,150,0.11) 0%, transparent 70%);
+      animation: ambientMove2 14s ease-in-out infinite alternate;
+    }
+
+    .ambient-mid {
+      position: fixed;
+      top: 50%; left: 50%;
+      width: 400px; height: 400px;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(0,212,170,0.06) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+      animation: ambientPulse 8s ease-in-out infinite;
+    }
+
+    @keyframes ambientMove1 {
+      from { transform: translate(0, 0) scale(1); }
+      to   { transform: translate(80px, 60px) scale(1.2); }
+    }
+    @keyframes ambientMove2 {
+      from { transform: translate(0, 0) scale(1); }
+      to   { transform: translate(-60px, -80px) scale(1.15); }
+    }
+    @keyframes ambientPulse {
+      0%, 100% { opacity: 0.5; transform: translate(-50%,-50%) scale(1); }
+      50%       { opacity: 1;   transform: translate(-50%,-50%) scale(1.3); }
+    }
+
+    /* ============================================================
+       NAVBAR
+    ============================================================ */
+    nav {
+      position: fixed;
+      top: 20px; left: 50%;
+      transform: translateX(-50%);
+      width: min(900px, calc(100% - 40px));
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 28px;
+      background: rgba(13, 17, 23, 0.7);
+      backdrop-filter: blur(30px) saturate(1.8);
+      -webkit-backdrop-filter: blur(30px) saturate(1.8);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-glass);
+      transition: all 0.4s var(--ease-apple);
+    }
+
+    nav.scrolled {
+      background: rgba(13, 17, 23, 0.85);
+      border-color: rgba(255,107,53,0.2);
+      box-shadow: var(--shadow-glass), var(--shadow-glow-orange);
+    }
+
+    .nav-logo {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem;
+      font-weight: 700;
+      background: var(--grad-java);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.02em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: var(--space-md);
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      transition: all 0.25s var(--ease-smooth);
+      position: relative;
+    }
+
+    .nav-links a:hover {
+      color: var(--text-primary);
+      background: var(--glass-bg-hover);
+    }
+
+    .nav-links a.active {
+      color: var(--java-orange);
+      background: rgba(255,107,53,0.1);
+    }
+
+    .nav-cta {
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 8px 20px;
+      border-radius: var(--radius-full);
+      background: var(--grad-java);
+      color: #fff;
+      transition: all 0.25s var(--ease-bounce);
+      box-shadow: 0 4px 15px rgba(255,107,53,0.3);
+    }
+
+    .nav-cta:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 25px rgba(255,107,53,0.45);
+    }
+
+    /* ============================================================
+       SECTION WRAPPER
+    ============================================================ */
+    section {
+      position: relative;
+      z-index: 1;
+      padding: var(--space-2xl) var(--space-xl);
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--java-orange);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: var(--space-md);
+      opacity: 0;
+      animation: fadeUp 0.6s var(--ease-apple) forwards;
+    }
+
+    .section-label::before {
+      content: '//';
+      opacity: 0.6;
+    }
+
+    .section-title {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: var(--space-lg);
+    }
+
+    /* ============================================================
+       HERO
+    ============================================================ */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding-top: 120px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-inner { max-width: 820px; }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: 7px 18px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-full);
+      backdrop-filter: blur(12px);
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: var(--space-lg);
+      opacity: 0;
+      animation: fadeDown 0.7s 0.1s var(--ease-apple) forwards;
+    }
+
+    .hero-badge .dot {
+      width: 7px; height: 7px;
+      background: var(--cyber-teal);
+      border-radius: 50%;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%,100% { box-shadow: 0 0 0 0 rgba(0,212,170,0.5); }
+      50%      { box-shadow: 0 0 0 6px rgba(0,212,170,0); }
+    }
+
+    .hero-title {
+      font-size: clamp(3rem, 8vw, 6rem);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      line-height: 1.0;
+      color: var(--text-primary);
+      margin-bottom: var(--space-md);
+      opacity: 0;
+      animation: fadeUp 0.8s 0.2s var(--ease-apple) forwards;
+    }
+
+    .hero-title .gradient-text {
+      background: var(--grad-hero);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-size: 200% auto;
+      animation: gradientShift 4s linear infinite;
+    }
+
+    @keyframes gradientShift {
+      0%   { background-position: 0% center; }
+      100% { background-position: 200% center; }
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      color: var(--text-muted);
+      max-width: 580px;
+      margin: 0 auto var(--space-lg);
+      line-height: 1.7;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.35s var(--ease-apple) forwards;
+    }
+
+    .hero-subtitle .code-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85em;
+      color: var(--java-orange-2);
+      background: rgba(255,107,53,0.1);
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: var(--space-md);
+      justify-content: center;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.5s var(--ease-apple) forwards;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: 14px 32px;
+      background: var(--grad-java);
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: var(--radius-full);
+      box-shadow: 0 4px 20px rgba(255,107,53,0.35);
+      transition: all 0.3s var(--ease-bounce);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s var(--ease-smooth);
+    }
+
+    .btn-primary:hover::after { left: 100%; }
+    .btn-primary:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 8px 35px rgba(255,107,53,0.5); }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: 14px 32px;
+      background: var(--glass-bg);
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(12px);
+      transition: all 0.3s var(--ease-smooth);
+    }
+
+    .btn-secondary:hover {
+      background: var(--glass-bg-hover);
+      border-color: var(--glass-border-h);
+      transform: translateY(-2px);
+      color: var(--text-primary);
+    }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 40px; left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-sm);
+      opacity: 0;
+      animation: fadeIn 1s 1.2s forwards;
+    }
+
+    .hero-scroll span {
+      font-size: 0.7rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-faint);
+      letter-spacing: 0.1em;
+    }
+
+    .scroll-line {
+      width: 1px; height: 50px;
+      background: linear-gradient(to bottom, var(--java-orange), transparent);
+      animation: scrollLine 2s ease-in-out infinite;
+    }
+
+    @keyframes scrollLine {
+      0%,100% { opacity: 0.4; transform: scaleY(1); }
+      50%      { opacity: 1;   transform: scaleY(1.2); }
+    }
+
+    /* ============================================================
+       STATS BAR
+    ============================================================ */
+    .stats-bar {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: center;
+      gap: 2px;
+      padding: 0 var(--space-xl);
+      margin-bottom: 0;
+    }
+
+    .stat-card {
+      flex: 1;
+      max-width: 220px;
+      padding: var(--space-lg) var(--space-md);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(20px);
+      text-align: center;
+      transition: all 0.35s var(--ease-smooth);
+    }
+
+    .stat-card:first-child { border-radius: var(--radius-md) 0 0 var(--radius-md); }
+    .stat-card:last-child  { border-radius: 0 var(--radius-md) var(--radius-md) 0; }
+
+    .stat-card:hover {
+      background: var(--glass-bg-hover);
+      border-color: rgba(255,107,53,0.25);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-glow-orange);
+    }
+
+    .stat-number {
+      font-size: 2.2rem;
+      font-weight: 900;
+      background: var(--grad-java);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.03em;
+    }
+
+    /* ============================================================
+       ABOUT
+    ============================================================ */
+    #about .about-grid {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: var(--space-xl);
+      align-items: center;
+    }
+
+    .about-avatar-wrap {
+      position: relative;
+    }
+
+    .about-avatar {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, var(--bg-surface), var(--bg-elevated));
+      border: 1px solid var(--glass-border);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 6rem;
+      position: relative;
+    }
+
+    .about-avatar::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 30% 30%, rgba(255,107,53,0.15), transparent 60%);
+    }
+
+    .avatar-glow {
+      position: absolute;
+      inset: -2px;
+      border-radius: calc(var(--radius-lg) + 2px);
+      background: var(--grad-java);
+      opacity: 0.3;
+      z-index: -1;
+      filter: blur(10px);
+    }
+
+    .about-content p {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      line-height: 1.8;
+      margin-bottom: var(--space-md);
+    }
+
+    .about-content p strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .about-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      margin-top: var(--space-lg);
+    }
+
+    .tag {
+      padding: 5px 14px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-full);
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      transition: all 0.25s var(--ease-smooth);
+    }
+
+    .tag:hover {
+      background: rgba(255,107,53,0.1);
+      border-color: rgba(255,107,53,0.4);
+      color: var(--java-orange-2);
+    }
+
+    /* ============================================================
+       SKILLS — BENTO GRID
+    ============================================================ */
+    #skills .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: auto;
+      gap: var(--space-sm);
+    }
+
+    .bento-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      backdrop-filter: blur(20px);
+      transition: all 0.35s var(--ease-smooth);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bento-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+    }
+
+    .bento-card:hover {
+      background: var(--glass-bg-hover);
+      border-color: rgba(255,107,53,0.25);
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-glass), 0 0 30px rgba(255,107,53,0.1);
+    }
+
+    .bento-card.hero-card {
+      grid-column: span 2;
+      grid-row: span 2;
+      background: linear-gradient(135deg, rgba(255,107,53,0.1), rgba(0,115,150,0.08));
+      border-color: rgba(255,107,53,0.2);
+    }
+
+    .bento-card.wide { grid-column: span 2; }
+
+    .bento-icon {
+      font-size: 2rem;
+      margin-bottom: var(--space-md);
+      display: block;
+    }
+
+    .bento-card.hero-card .bento-icon { font-size: 4rem; }
+
+    .bento-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+
+    .bento-card.hero-card .bento-title { font-size: 1.4rem; }
+
+    .bento-desc {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .skill-bar {
+      margin-top: var(--space-md);
+      height: 3px;
+      background: rgba(255,255,255,0.06);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .skill-bar-fill {
+      height: 100%;
+      border-radius: var(--radius-full);
+      background: var(--grad-java);
+      width: 0%;
+      transition: width 1.2s var(--ease-apple);
+    }
+
+    /* ============================================================
+       PROJECTS
+    ============================================================ */
+    #projects .projects-filter {
+      display: flex;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-xl);
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 7px 18px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-full);
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: all 0.25s var(--ease-smooth);
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      background: rgba(255,107,53,0.12);
+      border-color: rgba(255,107,53,0.4);
+      color: var(--java-orange-2);
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: var(--space-md);
+    }
+
+    .project-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      backdrop-filter: blur(20px);
+      transition: all 0.4s var(--ease-smooth);
+      position: relative;
+    }
+
+    .project-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(255,107,53,0.3);
+      box-shadow: var(--shadow-glass), 0 0 40px rgba(255,107,53,0.12);
+    }
+
+    .project-img {
+      width: 100%;
+      height: 200px;
+      background: linear-gradient(135deg, var(--bg-elevated), var(--bg-surface));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .project-img::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 60%, rgba(13,17,23,0.8));
+    }
+
+    .project-img-gradient {
+      position: absolute;
+      inset: 0;
+      opacity: 0.3;
+    }
+
+    .project-body { padding: var(--space-lg); }
+
+    .project-tech-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: var(--space-md);
+    }
+
+    .tech-pill {
+      padding: 3px 10px;
+      background: rgba(0,115,150,0.15);
+      border: 1px solid rgba(0,212,170,0.2);
+      border-radius: var(--radius-full);
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--cyber-teal);
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.03em;
+    }
+
+    .project-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .project-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: var(--space-md);
+    }
+
+    .project-links {
+      display: flex;
+      gap: var(--space-sm);
+    }
+
+    .project-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 16px;
+      border-radius: var(--radius-full);
+      font-size: 0.8rem;
+      font-weight: 600;
+      transition: all 0.25s var(--ease-smooth);
+    }
+
+    .project-link.primary {
+      background: rgba(255,107,53,0.12);
+      border: 1px solid rgba(255,107,53,0.3);
+      color: var(--java-orange-2);
+    }
+
+    .project-link.primary:hover {
+      background: rgba(255,107,53,0.22);
+      box-shadow: 0 0 20px rgba(255,107,53,0.2);
+    }
+
+    .project-link.secondary {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      color: var(--text-muted);
+    }
+
+    .project-link.secondary:hover { color: var(--text-primary); background: var(--glass-bg-hover); }
+
+    /* ============================================================
+       EXPERIENCE TIMELINE
+    ============================================================ */
+    #experience .timeline {
+      position: relative;
+      padding-right: 30px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 1px;
+      height: 100%;
+      background: linear-gradient(to bottom, var(--java-orange), var(--cyber-teal), transparent);
+    }
+
+    .timeline-item {
+      position: relative;
+      padding-right: var(--space-xl);
+      padding-bottom: var(--space-xl);
+    }
+
+    .timeline-dot {
+      position: absolute;
+      right: -6px; top: 6px;
+      width: 13px; height: 13px;
+      background: var(--java-orange);
+      border-radius: 50%;
+      border: 2px solid var(--bg-base);
+      box-shadow: 0 0 12px rgba(255,107,53,0.6);
+    }
+
+    .timeline-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      backdrop-filter: blur(20px);
+      transition: all 0.35s var(--ease-smooth);
+    }
+
+    .timeline-card:hover {
+      background: var(--glass-bg-hover);
+      border-color: rgba(255,107,53,0.25);
+      transform: translateX(-5px);
+    }
+
+    .timeline-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-md);
+    }
+
+    .timeline-role {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .timeline-company {
+      font-size: 0.88rem;
+      color: var(--java-orange-2);
+      font-weight: 600;
+      margin-top: 3px;
+    }
+
+    .timeline-period {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--text-faint);
+      background: var(--glass-bg);
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--glass-border);
+    }
+
+    .timeline-list {
+      list-style: none;
+    }
+
+    .timeline-list li {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      padding: 4px 0;
+      padding-right: var(--space-md);
+      position: relative;
+    }
+
+    .timeline-list li::before {
+      content: '▸';
+      position: absolute;
+      right: 0;
+      color: var(--java-orange);
+      font-size: 0.75rem;
+    }
+
+    /* ============================================================
+       CONTACT
+    ============================================================ */
+    #contact { text-align: center; }
+
+    .contact-wrapper {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .contact-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-xl);
+      backdrop-filter: blur(30px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .contact-card::before {
+      content: '';
+      position: absolute;
+      top: -1px; left: 20%; right: 20%;
+      height: 1px;
+      background: var(--grad-java);
+      opacity: 0.7;
+    }
+
+    .contact-glow {
+      position: absolute;
+      top: -100px; left: 50%;
+      transform: translateX(-50%);
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(255,107,53,0.1), transparent 70%);
+      pointer-events: none;
+    }
+
+    .form-group {
+      margin-bottom: var(--space-md);
+      text-align: right;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      outline: none;
+      transition: all 0.25s var(--ease-smooth);
+      resize: none;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color: rgba(255,107,53,0.5);
+      background: rgba(255,107,53,0.04);
+      box-shadow: 0 0 0 3px rgba(255,107,53,0.1);
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: var(--text-faint);
+    }
+
+    .contact-socials {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-md);
+      margin-top: var(--space-xl);
+    }
+
+    .social-link {
+      width: 48px; height: 48px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      transition: all 0.25s var(--ease-bounce);
+    }
+
+    .social-link:hover {
+      background: rgba(255,107,53,0.1);
+      border-color: rgba(255,107,53,0.4);
+      transform: translateY(-4px) scale(1.1);
+      box-shadow: 0 8px 20px rgba(255,107,53,0.2);
+    }
+
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: var(--space-xl);
+      border-top: 1px solid var(--glass-border);
+      color: var(--text-faint);
+      font-size: 0.82rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    footer span {
+      background: var(--grad-java);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* ============================================================
+       SCROLL REVEAL ANIMATIONS
+    ============================================================ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.7s var(--ease-apple), transform 0.7s var(--ease-apple);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* ============================================================
+       KEYFRAMES
+    ============================================================ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    /* ============================================================
+       NOTIFICATION TOAST
+    ============================================================ */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--bg-elevated);
+      border: 1px solid rgba(0,212,170,0.4);
+      border-radius: var(--radius-md);
+      padding: 14px 24px;
+      color: var(--cyber-teal);
+      font-size: 0.88rem;
+      font-weight: 600;
+      backdrop-filter: blur(20px);
+      z-index: 1000;
+      transition: transform 0.5s var(--ease-bounce);
+      box-shadow: 0 8px 30px rgba(0,212,170,0.15);
+    }
+
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ============================================================
+       DIVIDER
+    ============================================================ */
+    .section-divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+      position: relative;
+      z-index: 1;
+      margin: 0 var(--space-xl);
+      width: calc(100% - var(--space-xl) * 2);
+    }
+
+    /* ============================================================
+       SCROLLBAR
+    ============================================================ */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg-void); }
+    ::-webkit-scrollbar-thumb { background: var(--java-orange); border-radius: 2px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--java-orange-2); }
+
+    /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+    @media (max-width: 768px) {
+      body { cursor: auto; }
+      #cursor-dot, #cursor-ring { display: none; }
+
+      section { padding: var(--space-xl) var(--space-md); }
+
+      nav { width: calc(100% - 24px); padding: 12px 18px; }
+      .nav-links { display: none; }
+
+      #about .about-grid { grid-template-columns: 1fr; }
+      .about-avatar { max-width: 200px; margin: 0 auto; }
+
+      #skills .bento-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .bento-card.hero-card { grid-column: span 2; }
+      .bento-card.wide { grid-column: span 2; }
+
+      .stats-bar { flex-wrap: wrap; padding: 0 var(--space-md); }
+      .stat-card { flex: 1 1 calc(50% - 2px); }
+      .stat-card:first-child { border-radius: var(--radius-sm) 0 0 0; }
+      .stat-card:last-child  { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Custom Cursor -->
+  <div id="cursor-dot"></div>
+  <div id="cursor-ring"></div>
+
+  <!-- Ambient Background Lights -->
+  <div class="ambient-lights"></div>
+  <div class="ambient-mid"></div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">✅ تم إرسال رسالتك بنجاح!</div>
+
+  <!-- ============================================================
+       NAVBAR
+  ============================================================ -->
+  <nav id="navbar">
+    <div class="nav-logo">{ AF.dev }</div>
+    <ul class="nav-links">
+      <li><a href="#about">عنّي</a></li>
+      <li><a href="#skills">المهارات</a></li>
+      <li><a href="#projects">المشاريع</a></li>
+      <li><a href="#experience">الخبرة</a></li>
+      <li><a href="#contact">تواصل</a></li>
+    </ul>
+    <a href="#contact" class="nav-cta">تواصل معي</a>
+  </nav>
+
+  <!-- ============================================================
+       HERO
+  ============================================================ -->
+  <section id="hero">
+    <div class="hero-inner">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        متاح للعمل الحر والفرص الجديدة
+      </div>
+
+      <h1 class="hero-title">
+        أبنيَ الـ Backend<br />
+        <span class="gradient-text">بإتقان Java</span>
+      </h1>
+
+      <p class="hero-subtitle">
+        مطوّر <span class="code-tag">Java</span> متخصص في بناء أنظمة خلفية قوية وقابلة للتوسّع،
+        أجمع بين نظافة الكود وعمق الهندسة لأحوّل الأفكار إلى واقع رقمي.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#projects" class="btn-primary">
+          <span>🚀</span> شاهد أعمالي
+        </a>
+        <a href="#contact" class="btn-secondary">
+          <span>💬</span> تواصل معي
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-scroll">
+      <span>scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       STATS
+  ============================================================ -->
+  <div class="stats-bar">
+    <div class="stat-card reveal">
+      <div class="stat-number" data-count="3">0</div>
+      <div class="stat-label">سنوات خبرة</div>
+    </div>
+    <div class="stat-card reveal reveal-delay-1">
+      <div class="stat-number" data-count="24">0</div>
+      <div class="stat-label">مشروع مُكتمل</div>
+    </div>
+    <div class="stat-card reveal reveal-delay-2">
+      <div class="stat-number" data-count="1200">0</div>
+      <div class="stat-label">Commit على GitHub</div>
+    </div>
+    <div class="stat-card reveal reveal-delay-3">
+      <div class="stat-number" data-count="8">0</div>
+      <div class="stat-label">تقنيات رئيسية</div>
+    </div>
+  </div>
+
+  <div class="section-divider" style="margin: 80px auto;"></div>
+
+  <!-- ============================================================
+       ABOUT
+  ============================================================ -->
+  <section id="about">
+    <div class="section-label reveal">About Me</div>
+    <div class="about-grid">
+      <div class="about-avatar-wrap reveal">
+        <div class="avatar-glow"></div>
+        <div class="about-avatar">☕</div>
+      </div>
+      <div class="about-content">
+        <h2 class="section-title reveal">مرحباً، أنا<br /><span style="background:var(--grad-java);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">عبدالرحمن فرحان</span></h2>
+        <p class="reveal reveal-delay-1">
+          <strong>مطوّر Java</strong> شغوف ببناء أنظمة خلفية متينة، أؤمن بأن الكود الجيد يشبه الأثاث الجيد —
+          لا يُلاحَظ إلا حين يغيب.
+        </p>
+        <p class="reveal reveal-delay-2">
+          أعمل بعمق مع <strong>Spring Boot</strong> و <strong>Microservices</strong> وأهتم بهندسة النظام
+          بقدر اهتمامي بتجربة المطوّر. كل سطر كود أكتبه يعكس <strong>��حترافية ودقة</strong>.
+        </p>
+        <div class="about-tags reveal reveal-delay-3">
+          <span class="tag">Java 21</span>
+          <span class="tag">Spring Boot</span>
+          <span class="tag">Hibernate</span>
+          <span class="tag">PostgreSQL</span>
+          <span class="tag">Docker</span>
+          <span class="tag">Microservices</span>
+          <span class="tag">REST API</span>
+          <span class="tag">Git</span>
+          <span class="tag">Linux</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider" style="margin: 0 auto 0;"></div>
+
+  <!-- ============================================================
+       SKILLS — BENTO GRID
+  ============================================================ -->
+  <section id="skills">
+    <div class="section-label reveal">Tech Stack</div>
+    <h2 class="section-title reveal">المهارات التقنية</h2>
+
+    <div class="bento-grid">
+
+      <!-- Hero Card -->
+      <div class="bento-card hero-card reveal">
+        <span class="bento-icon">☕</span>
+        <div class="bento-title">Java & JVM Ecosystem</div>
+        <div class="bento-desc">
+          Java 17/21 · JVM Internals · Concurrency · Streams API · Functional Programming ·
+          Design Patterns · Clean Architecture
+        </div>
+        <div class="skill-bar" style="margin-top:20px;">
+          <div class="skill-bar-fill" data-width="95%"></div>
+        </div>
+        <div style="font-size:0.72rem;color:var(--text-faint);margin-top:6px;font-family:'JetBrains Mono',monospace;">95% proficiency</div>
+      </div>
+
+      <!-- Spring Boot -->
+      <div class="bento-card reveal reveal-delay-1">
+        <span class="bento-icon">🌱</span>
+        <div class="bento-title">Spring Boot</div>
+        <div class="bento-desc">Spring Security · JPA · MVC · WebFlux</div>
+        <div class="skill-bar">
+          <div class="skill-bar-fill" data-width="90%"></div>
+        </div>
+      </div>
+
+      <!-- Docker -->
+      <div class="bento-card reveal reveal-delay-2">
+        <span class="bento-icon">🐳</span>
+        <div class="bento-title">Docker</div>
+        <div class="bento-desc">Containerization · Compose · CI/CD</div>
+        <div class="skill-bar">
+          <div class="skill-bar-fill" data-width="80%"></div>
+        </div>
+      </div>
+
+      <!-- Database Wide -->
+      <div class="bento-card wide reveal reveal-delay-1">
+        <span class="bento-icon">🗄️</span>
+        <div class="bento-title">Databases</div>
+        <div class="bento-desc">PostgreSQL · MySQL · MongoDB · Redis · Hibernate ORM · Query Optimization</div>
+        <div class="skill-bar">
+          <div class="skill-bar-fill" data-width="85%"></div>
+        </div>
+      </div>
+
+      <!-- Microservices -->
+      <div class="bento-card reveal reveal-delay-2">
+        <span class="bento-icon">🔗</span>
+        <div class="bento-title">Microservices</div>
+        <div class="bento-desc">REST · gRPC · Kafka · API Gateway</div>
+        <div class="skill-bar">
+          <div class="skill-bar-fill" data-width="78%"></div>
+        </div>
+      </div>
+
+      <!-- Git -->
+      <div class="bento-card reveal reveal-delay-3">
+        <span class="bento-icon">🌿</span>
+        <div class="bento-title">Git & CI/CD</div>
+        <div class="bento-desc">GitHub Actions · GitFlow · Jenkins</div>
+        <div class="skill-bar">
+          <div class="skill-bar-fill" data-width="88%"></div>
+        </div>
+      </div>
+
+      <!-- Testing -->
+      <div class="bento-card reveal reveal-delay-1">
+        <span class="bento-icon">🧪</span>
+        <div class="bento-title">Testing</div>
+        <div class="bento-desc">JUnit 5 · Mockito · TDD · Integration Tests</div>
+        <div class="skill-bar">
+          <div class="skill-bar-fill" data-width="82%"></div>
+        </div>
+      </div>
+
+      <!-- Cloud -->
+      <div class="bento-card reveal reveal-delay-2">
+        <span class="bento-icon">☁️</span>
+        <div class="bento-title">Cloud & Linux</div>
+        <div class="bento-desc">AWS Basics · VPS · Bash Scripting</div>
+        <div class="skill-bar">
+          <div class="skill-bar-fill" data-width="70%"></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="section-divider" style="margin: 0 auto;"></div>
+
+  <!-- ============================================================
+       PROJECTS
+  ============================================================ -->
+  <section id="projects">
+    <div class="section-label reveal">Projects</div>
+    <h2 class="section-title reveal">أبرز المشاريع</h2>
+
+    <div class="projects-filter reveal">
+      <button class="filter-btn active" data-filter="all">الكل</button>
+      <button class="filter-btn" data-filter="backend">Backend</button>
+      <button class="filter-btn" data-filter="fullstack">Full Stack</button>
+      <button class="filter-btn" data-filter="api">API</button>
+    </div>
+
+    <div class="projects-grid">
+
+      <div class="project-card reveal" data-category="backend">
+        <div class="project-img" style="background:linear-gradient(135deg,#1a0d0533,#0f264033);">
+          <div class="project-img-gradient" style="background:radial-gradient(circle at 30% 40%, rgba(255,107,53,0.3), transparent 60%);"></div>
+          <span style="position:relative;z-index:1;">🏗️</span>
+        </div>
+        <div class="project-body">
+          <div class="project-tech-row">
+            <span class="tech-pill">Java</span>
+            <span class="tech-pill">Spring Boot</span>
+            <span class="tech-pill">PostgreSQL</span>
+            <span class="tech-pill">Docker</span>
+          </div>
+          <div class="project-title">نظام إدارة المستخدمين</div>
+          <div class="project-desc">نظام متكامل لإدارة المصادقة والصلاحيات مع JWT و OAuth2، مبني على معمارية طبقية نظيفة.</div>
+          <div class="project-links">
+            <a href="#" class="project-link primary">🔗 عرض المشروع</a>
+            <a href="#" class="project-link secondary">📦 GitHub</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card reveal reveal-delay-1" data-category="api">
+        <div class="project-img" style="background:linear-gradient(135deg,#00264033,#00150a33);">
+          <div class="project-img-gradient" style="background:radial-gradient(circle at 60% 40%, rgba(0,212,170,0.3), transparent 60%);"></div>
+          <span style="position:relative;z-index:1;">⚡</span>
+        </div>
+        <div class="project-body">
+          <div class="project-tech-row">
+            <span class="tech-pill">Java</span>
+            <span class="tech-pill">Spring WebFlux</span>
+            <span class="tech-pill">Redis</span>
+            <span class="tech-pill">Kafka</span>
+          </div>
+          <div class="project-title">Real-time Notification API</div>
+          <div class="project-desc">واجهة برمجية تفاعلية للإشعارات الفورية باستخدام Reactive Programming وـ WebSockets.</div>
+          <div class="project-links">
+            <a href="#" class="project-link primary">🔗 عرض المشروع</a>
+            <a href="#" class="project-link secondary">📦 GitHub</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card reveal reveal-delay-2" data-category="fullstack">
+        <div class="project-img" style="background:linear-gradient(135deg,#1a1a0d33,#1a002633);">
+          <div class="project-img-gradient" style="background:radial-gradient(circle at 40% 60%, rgba(79,195,247,0.25), transparent 60%);"></div>
+          <span style="position:relative;z-index:1;">🛒</span>
+        </div>
+        <div class="project-body">
+          <div class="project-tech-row">
+            <span class="tech-pill">Java</span>
+            <span class="tech-pill">Spring Boot</span>
+            <span class="tech-pill">React</span>
+            <span class="tech-pill">MySQL</span>
+          </div>
+          <div class="project-title">منصة تجارة إلكترونية</div>
+          <div class="project-desc">منصة متكاملة بـ Microservices Architecture تشمل خدمات المنتجات، الطلبات، والمدفوعات.</div>
+          <div class="project-links">
+            <a href="#" class="project-link primary">🔗 عرض المشروع</a>
+            <a href="#" class="project-link secondary">📦 GitHub</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card reveal" data-category="backend">
+        <div class="project-img" style="background:linear-gradient(135deg,#0d1a0033,#001a1a33);">
+          <div class="project-img-gradient" style="background:radial-gradient(circle at 50% 30%, rgba(0,115,150,0.3), transparent 60%);"></div>
+          <span style="position:relative;z-index:1;">📊</span>
+        </div>
+        <div class="project-body">
+          <div class="project-tech-row">
+            <span class="tech-pill">Java</span>
+            <span class="tech-pill">Quarkus</span>
+            <span class="tech-pill">MongoDB</span>
+          </div>
+          <div class="project-title">Data Processing Pipeline</div>
+          <div class="project-desc">خط أنابيب معالجة بيانات عالي الأداء يعالج أكثر من 100,000 سجل في الثانية.</div>
+          <div class="project-links">
+            <a href="#" class="project-link primary">🔗 عرض المشروع</a>
+            <a href="#" class="project-link secondary">📦 GitHub</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card reveal reveal-delay-1" data-category="api">
+        <div class="project-img" style="background:linear-gradient(135deg,#1a000d33,#0d001a33);">
+          <div class="project-img-gradient" style="background:radial-gradient(circle at 30% 70%, rgba(255,140,66,0.25), transparent 60%);"></div>
+          <span style="position:relative;z-index:1;">🔐</span>
+        </div>
+        <div class="project-body">
+          <div class="project-tech-row">
+            <span class="tech-pill">Java</span>
+            <span class="tech-pill">Spring Security</span>
+            <span class="tech-pill">JWT</span>
+          </div>
+          <div class="project-title">Auth Microservice</div>
+          <div class="project-desc">خدمة مصادقة مستقلة مع دعم OAuth2, PKCE, MFA وإدارة الجلسات الآمنة.</div>
+          <div class="project-links">
+            <a href="#" class="project-link primary">🔗 عرض المشروع</a>
+            <a href="#" class="project-link secondary">📦 GitHub</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card reveal reveal-delay-2" data-category="fullstack">
+        <div class="project-img" style="background:linear-gradient(135deg,#00101a33,#001a0d33);">
+          <div class="project-img-gradient" style="background:radial-gradient(circle at 70% 40%, rgba(0,212,170,0.2), transparent 60%);"></div>
+          <span style="position:relative;z-index:1;">📝</span>
+        </div>
+        <div class="project-body">
+          <div class="project-tech-row">
+            <span class="tech-pill">Java</span>
+            <span class="tech-pill">Spring Boot</span>
+            <span class="tech-pill">Vue.js</span>
+          </div>
+          <div class="project-title">منصة إدارة المهام</div>
+          <div class="project-desc">تطبيق إدارة مهام بـ Real-time updates وـ collaboration features متعددة الفرق.</div>
+          <div class="project-links">
+            <a href="#" class="project-link primary">🔗 عرض المشروع</a>
+            <a href="#" class="project-link secondary">📦 GitHub</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="section-divider" style="margin: 0 auto;"></div>
+
+  <!-- ============================================================
+       EXPERIENCE
+  ============================================================ -->
+  <section id="experience">
+    <div class="section-label reveal">Experience</div>
+    <h2 class="section-title reveal">المسيرة المهنية</h2>
+
+    <div class="timeline">
+
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <div>
+              <div class="timeline-role">Senior Java Backend Developer</div>
+              <div class="timeline-company">Tech Solutions Inc.</div>
+            </div>
+            <div class="timeline-period">2023 — الآن</div>
+          </div>
+          <ul class="timeline-list">
+            <li>قيادة تصميم وتطوير خدمات Microservices بـ Spring Boot</li>
+            <li>تحسين أداء قاعدة البيانات بنسبة 40% عبر Query Optimization</li>
+            <li>بناء CI/CD Pipeline كامل باستخدام GitHub Actions و Docker</li>
+            <li>مراجعة الكود وتوجيه المطوّرين الجدد</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="timeline-item reveal reveal-delay-1">
+        <div class="timeline-dot" style="background:var(--cyber-teal);box-shadow:0 0 12px rgba(0,212,170,0.6);"></div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <div>
+              <div class="timeline-role">Java Backend Developer</div>
+              <div class="timeline-company">Digital Agency Co.</div>
+            </div>
+            <div class="timeline-period">2022 — 2023</div>
+          </div>
+          <ul class="timeline-list">
+            <li>تطوير REST APIs لمنصات تجارة إلكترونية بحجم عمليات عالٍ</li>
+            <li>تكامل مع بوابات دفع إلكتروني متعددة</li>
+            <li>تطبيق نمط TDD بتغطية كود 85%+</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="timeline-item reveal reveal-delay-2">
+        <div class="timeline-dot" style="background:var(--arctic-blue);box-shadow:0 0 12px rgba(79,195,247,0.6);"></div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <div>
+              <div class="timeline-role">Junior Java Developer</div>
+              <div class="timeline-company">Startup Hub</div>
+            </div>
+            <div class="timeline-period">2021 — 2022</div>
+          </div>
+          <ul class="timeline-list">
+            <li>بناء نظام إدارة محتوى داخلي بـ Spring MVC</li>
+            <li>تكامل مع APIs خارجية وبناء وحدات OAuth2</li>
+            <li>المشاركة في Agile sprints وتسليم Features أسبوعياً</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="section-divider" style="margin: 0 auto;"></div>
+
+  <!-- ============================================================
+       CONTACT
+  ============================================================ -->
+  <section id="contact">
+    <div class="section-label reveal" style="justify-content:center;">Contact</div>
+    <h2 class="section-title reveal" style="text-align:center;">هل لديك مشروع؟<br /><span style="background:var(--grad-java);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">لنتحدث!</span></h2>
+
+    <div class="contact-wrapper">
+      <div class="contact-card reveal">
+        <div class="contact-glow"></div>
+        <form id="contact-form">
+          <div class="form-group">
+            <label>// الاسم</label>
+            <input type="text" placeholder="اسمك الكريم" required />
+          </div>
+          <div class="form-group">
+            <label>// البريد الإلكتروني</label>
+            <input type="email" placeholder="your@email.com" required />
+          </div>
+          <div class="form-group">
+            <label>// الرسالة</label>
+            <textarea rows="5" placeholder="أخبرني عن مشروعك..." required></textarea>
+          </div>
+          <button type="submit" class="btn-primary" style="width:100%;justify-content:center;">
+            <span>📨</span> إرسال الرسالة
+          </button>
+        </form>
+
+        <div class="contact-socials">
+          <a href="https://github.com" target="_blank" class="social-link" title="GitHub">💻</a>
+          <a href="https://linkedin.com" target="_blank" class="social-link" title="LinkedIn">💼</a>
+          <a href="mailto:you@email.com" class="social-link" title="Email">📧</a>
+          <a href="https://twitter.com" target="_blank" class="social-link" title="Twitter">🐦</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FOOTER
+  ============================================================ -->
+  <footer>
+    <p>صُنع بـ <span>☕ Java passion</span> و <span>❤️ attention to detail</span> &nbsp;·&nbsp; © 2026 عبدالرحمن فرحان</p>
+  </footer>
+
+
+  <!-- ============================================================
+       JAVASCRIPT
+  ============================================================ -->
+  <script>
+    /* ----------------------------------------------------------
+       CUSTOM CURSOR
+    ---------------------------------------------------------- */
+    const dot  = document.getElementById('cursor-dot');
+    const ring = document.getElementById('cursor-ring');
+    let mouseX = 0, mouseY = 0;
+    let ringX  = 0, ringY  = 0;
+
+    document.addEventListener('mousemove', e => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      dot.style.left = mouseX + 'px';
+      dot.style.top  = mouseY + 'px';
+    });
+
+    // Smooth ring follow
+    function animateRing() {
+      ringX += (mouseX - ringX) * 0.12;
+      ringY += (mouseY - ringY) * 0.12;
+      ring.style.left = ringX + 'px';
+      ring.style.top  = ringY + 'px';
+      requestAnimationFrame(animateRing);
+    }
+    animateRing();
+
+    // Hover effect
+    document.querySelectorAll('a, button, .bento-card, .project-card, .social-link, .stat-card').forEach(el => {
+      el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+      el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+    });
+
+    /* ----------------------------------------------------------
+       NAVBAR SCROLL
+    ---------------------------------------------------------- */
+    const navbar   = document.getElementById('navbar');
+    const navLinks = document.querySelectorAll('.nav-links a');
+    const sections = document.querySelectorAll('section[id]');
+
+    window.addEventListener('scroll', () => {
+      // Scrolled class
+      navbar.classList.toggle('scrolled', window.scrollY > 60);
+
+      // Active link highlight
+      let current = '';
+      sections.forEach(sec => {
+        if (window.scrollY >= sec.offsetTop - 160) current = sec.id;
+      });
+      navLinks.forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+      });
+    });
+
+    /* ----------------------------------------------------------
+       SCROLL REVEAL
+    ---------------------------------------------------------- */
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+
+          // Animate skill bars when visible
+          entry.target.querySelectorAll('.skill-bar-fill').forEach(bar => {
+            bar.style.width = bar.dataset.width;
+          });
+
+          // Animate stat counters
+          if (entry.target.classList.contains('stat-card')) {
+            const numEl = entry.target.querySelector('.stat-number');
+            if (numEl && numEl.dataset.count) {
+              animateCounter(numEl, parseInt(numEl.dataset.count));
+            }
+          }
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+    // Skill bars in bento grid
+    const bentoObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.querySelectorAll('.skill-bar-fill').forEach(bar => {
+            setTimeout(() => { bar.style.width = bar.dataset.width; }, 200);
+          });
+        }
+      });
+    }, { threshold: 0.3 });
+
+    document.querySelectorAll('.bento-card').forEach(el => bentoObserver.observe(el));
+
+    /* ----------------------------------------------------------
+       COUNTER ANIMATION
+    ---------------------------------------------------------- */
+    function animateCounter(el, target) {
+      if (el._animated) return;
+      el._animated = true;
+      const suffix = target >= 1000 ? '+' : '+';
+      let start = 0;
+      const duration = 1400;
+      const startTime = performance.now();
+
+      function update(now) {
+        const progress = Math.min((now - startTime) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = Math.round(eased * target);
+        el.textContent = current.toLocaleString() + (progress < 1 ? '' : suffix);
+        if (progress < 1) requestAnimationFrame(update);
+        else el.textContent = target.toLocaleString() + suffix;
+      }
+      requestAnimationFrame(update);
+    }
+
+    /* ----------------------------------------------------------
+       PROJECT FILTER
+    ---------------------------------------------------------- */
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const projectCards = document.querySelectorAll('.project-card');
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const filter = btn.dataset.filter;
+        projectCards.forEach(card => {
+          const show = filter === 'all' || card.dataset.category === filter;
+          card.style.transition = 'opacity 0.4s, transform 0.4s';
+          if (show) {
+            card.style.opacity = '1';
+            card.style.transform = 'scale(1) translateY(0)';
+            card.style.pointerEvents = 'auto';
+          } else {
+            card.style.opacity = '0.25';
+            card.style.transform = 'scale(0.97) translateY(4px)';
+            card.style.pointerEvents = 'none';
+          }
+        });
+      });
+    });
+
+    /* ----------------------------------------------------------
+       CONTACT FORM
+    ---------------------------------------------------------- */
+    const form  = document.getElementById('contact-form');
+    const toast = document.getElementById('toast');
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const btn = form.querySelector('button[type=submit]');
+      btn.textContent = '⏳ جاري الإرسال...';
+      btn.disabled = true;
+
+      setTimeout(() => {
+        form.reset();
+        btn.innerHTML = '<span>📨</span> إرسال الرسالة';
+        btn.disabled = false;
+        showToast();
+      }, 1500);
+    });
+
+    function showToast() {
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3500);
+    }
+
+    /* ----------------------------------------------------------
+       SMOOTH SCROLL
+    ---------------------------------------------------------- */
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    /* ----------------------------------------------------------
+       PARALLAX AMBIENT LIGHTS ON MOUSE MOVE
+    ---------------------------------------------------------- */
+    const ambientBefore = document.querySelector('.ambient-lights');
+    document.addEventListener('mousemove', e => {
+      const xRatio = e.clientX / window.innerWidth;
+      const yRatio = e.clientY / window.innerHeight;
+      const moveX = (xRatio - 0.5) * 40;
+      const moveY = (yRatio - 0.5) * 40;
+      if (ambientBefore) {
+        ambientBefore.style.transform = `translate(${moveX * 0.4}px, ${moveY * 0.4}px)`;
+      }
+    });
+  </script>
+
+</body>
+</html>
